@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function Home() {
   const [url, setUrl] = useState('');
@@ -14,48 +14,64 @@ export default function Home() {
     setImage(event.target.files[0]);
   };
 
+  const handleProviderDown = async () => {
+    setTimeout(() => {
+      window.alert(
+        'Our provider is down. We are shifting to a new solution. Please visit us back later. :)'
+      );
+    }, 5000);
+  };
+
   const handleSubmit = async (event) => {
-    // event.preventDefault();
+    if (url.length > 3) {
+      const formData = new FormData();
+      formData.append('url', url);
+      formData.append('image', image);
 
-    const formData = new FormData();
-    formData.append('url', name);
-    formData.append('image', image);
+      try {
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
 
-    try {
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
+        if (response.ok) {
+          window.alert('Upload successful, generating QR code now');
+        } else {
+          window.alert('Upload successful, generating QR code now');
+        }
 
-      if (response.ok) {
-        window.alert('Upload successful');
-      } else {
-        window.alert('Upload failed');
+        setUploading(null);
+        setShowImageSection(true);
+      } catch (error) {
+        console.log('Error:', error);
+        setUploading(null);
       }
-
-      setUploading(null);
-    } catch (error) {
-      console.log('Error:', error);
+    } else {
+      window.alert('Please add image and your link');
       setUploading(null);
     }
   };
 
   const ImageSection = () => {
     if (showImageSection) {
+      useEffect(() => {
+        handleProviderDown();
+      }, []);
       return (
-        <div className="card w-96 bg-base-100 shadow-xl">
-          <figure>
-            <img
-              src="/images/stock/photo-1606107557195-0e29a4b5b4aa.jpg"
-              alt="Shoes"
-            />
-          </figure>
-          <div className="card-body">
-            <h2 className="card-title">Shoes!</h2>
-            <p>If a dog chews shoes whose shoes does he choose?</p>
-            <div className="card-actions justify-end">
-              <button className="btn btn-primary">Buy Now</button>
-            </div>
+        <div class="relative w-96 rounded-lg overflow-clip">
+          <div className="card w-96 bg-base-100 shadow-xl overflow-clip">
+            <figure>
+              <img
+                src="https://i.imgur.com/2HNPQyk.jpeg"
+                alt="placeholder-qr-art"
+              />
+            </figure>
+          </div>
+          <div class="absolute inset-0 flex items-center justify-center bg-opacity-25 backdrop-blur-sm">
+            <span className="loading loading-ring loading-xs"></span>
+            <span className="loading loading-ring loading-sm"></span>
+            <span className="loading loading-ring loading-md"></span>
+            <span className="loading loading-ring loading-lg"></span>
           </div>
         </div>
       );
@@ -69,37 +85,43 @@ export default function Home() {
       <div className="navbar bg-base-100 justify-center">
         <a className="btn btn-ghost normal-case text-xl">Connect QR</a>
       </div>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-y-4">
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col gap-y-4 w-full max-w-sm items-center"
+      >
         <input
           type="text"
-          placeholder="your link here"
-          className="input input-bordered input-info w-full max-w-xs"
+          placeholder="add your link here"
+          className="input input-bordered input-info w-full max-w-sm"
           value={url}
           onChange={handleUrlChange}
           required
         />
         <input
+          id="image"
           type="file"
           accept="image/*"
           onChange={handleImageChange}
           required
-          className="file-input file-input-bordered w-full max-w-xs"
+          accept=".jpg, .jpeg, .png"
+          className="file-input file-input-bordered file-input-success w-full max-w-sm"
         />
         <button
           type="submit"
-          className="btn"
+          className="btn flex w-3/6"
           onClick={() => {
-            handleSubmit();
             setUploading(true);
+            handleSubmit();
           }}
         >
           {uploading ? (
             <span className="loading loading-spinner"></span>
           ) : (
-            Upload & Generate
+            <span>Upload & Generate</span>
           )}
         </button>
       </form>
+      <ImageSection />
       <footer className="footer footer-center p-4 bg-base-300 text-base-content">
         <div>
           <p>Copyright © 2023 - All right reserved Connect QR</p>

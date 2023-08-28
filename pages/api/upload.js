@@ -11,18 +11,20 @@ export default async function handler(req, res) {
     const form = new formidable.IncomingForm();
     form.uploadDir = './public/uploads'; // Specify the directory to save the uploaded images
 
-    form.parse(req, (err, fields, files) => {
-      if (err) {
-        return res.status(500).json({ error: 'Upload failed.' });
-      }
+    setTimeout(() => {
+      form.parse(req, (err, fields, files) => {
+        if (err) {
+          return res.status(500).json({ error: 'Upload failed.' });
+        }
 
-      const { url } = fields;
-      const { image } = files;
+        const { url } = fields;
+        const { image } = files;
 
-      // Here, you can perform further processing like saving the image and name to a database
+        // Here, you can perform further processing like saving the image and name to a database
 
-      res.status(200).json({ message: 'Upload successful.' });
-    });
+        res.status(200).json({ message: 'Upload successful.' });
+      });
+    }, 3000);
   } else {
     res.status(405).json({ error: 'Method not allowed.' });
   }
