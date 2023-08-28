@@ -4,6 +4,7 @@ export default function Home() {
   const [url, setUrl] = useState('');
   const [image, setImage] = useState(null);
   const [uploading, setUploading] = useState(null);
+  const [showImageSection, setShowImageSection] = useState(false);
 
   const handleUrlChange = (event) => {
     setUrl(event.target.value);
@@ -36,6 +37,30 @@ export default function Home() {
     } catch (error) {
       console.log('Error:', error);
       setUploading(null);
+    }
+  };
+
+  const ImageSection = () => {
+    if (showImageSection) {
+      return (
+        <div className="card w-96 bg-base-100 shadow-xl">
+          <figure>
+            <img
+              src="/images/stock/photo-1606107557195-0e29a4b5b4aa.jpg"
+              alt="Shoes"
+            />
+          </figure>
+          <div className="card-body">
+            <h2 className="card-title">Shoes!</h2>
+            <p>If a dog chews shoes whose shoes does he choose?</p>
+            <div className="card-actions justify-end">
+              <button className="btn btn-primary">Buy Now</button>
+            </div>
+          </div>
+        </div>
+      );
+    } else {
+      return <div />;
     }
   };
 
